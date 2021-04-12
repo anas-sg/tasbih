@@ -1,6 +1,11 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-import winsound
+try:
+    import winsound
+    def beep():
+        winsound.MessageBeep()
+except ImportError:
+    def beep(): pass
 
 OPTIONS = {
     "Subḥānallāh (سُبْحَانَ ٱللَّٰهِ)": 33,
@@ -13,9 +18,6 @@ OPTIONS = {
 }
 COUNT = TARGET = 0
 STARTED = False
-
-def beep():
-    winsound.MessageBeep()
 
 def select(arg):
     global STARTED, COUNT
@@ -69,7 +71,6 @@ count_label.grid(column=0, row=3, columnspan=2)
 # Gets the requested values of the height and width.
 window_width = window.winfo_reqwidth()
 window_height = window.winfo_reqheight()
-# print("Width", windowWidth, "Height", windowHeight)
  
 # Gets both half the screen width/height and window width/height
 position_right = int(window.winfo_screenwidth()/2 - window_width/2)
