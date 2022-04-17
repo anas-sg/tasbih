@@ -26,16 +26,19 @@ def select(arg):
     entry.delete(0, tk.END)
     entry.insert(tk.END, OPTIONS[arg])
     COUNT = 0
-    count_label['text'] = "Press Spacebar to start counting..."
+    count_label['text'] = "Press Spacebar/→ to start counting..."
 
 def count(arg):
     global STARTED, TARGET, COUNT
     if STARTED:
-        COUNT += 1
-        count_label['text'] = f"{COUNT}/{TARGET}"
+        if arg.keysym in {"space", "Right"}:
+            COUNT += 1
+        elif arg.keysym == "Left":
+            COUNT -= 1
+        count_label['text'] = f"←\t{COUNT}/{TARGET}\t→"
         if COUNT == TARGET:
             beep()
-            count_label['text'] = "You have completed! ٱلْحَمْدُ لِلَّٰهِ! Press Spacebar to restart"
+            count_label['text'] = "You have completed! ٱلْحَمْدُ لِلَّٰهِ! Press Spacebar/→ to restart"
             entry['state'] = 'normal'
             STARTED = False
             COUNT = 0        
@@ -44,13 +47,15 @@ def count(arg):
             TARGET = int(entry.get())
             entry['state'] = 'disabled'
             STARTED = True
-            count_label['text'] = f"{COUNT}/{TARGET}"
+            count_label['text'] = f"←\t{COUNT}/{TARGET}\t→"
         except ValueError:
             count_label['text'] = "Invalid number"
 
 window = tk.Tk()
 window.title("Tasbih")
 window.bind("<space>", count)
+window.bind("<Right>", count)
+window.bind("<Left>", count)
 window.resizable(0,0)
 
 variable = tk.StringVar(window)
@@ -65,18 +70,12 @@ entry = tk.Entry(window)
 entry.grid(column=1, row=1)
 
 entry.insert(0, default_count)
-count_label = tk.Label(window, text="Press Spacebar to start counting...")
+count_label = tk.Label(window, text="Press Spacebar/→ to start counting...")
 count_label.grid(column=0, row=3, columnspan=2)
 
-# Gets the requested values of the height and width.
-window_width = window.winfo_reqwidth()
-window_height = window.winfo_reqheight()
- 
-# Gets both half the screen width/height and window width/height
-position_right = int(window.winfo_screenwidth()/2 - window_width/2)
-position_down = int(window.winfo_screenheight()/2 - window_height/2)
- 
-# Positions the window in the center of the page.
-window.geometry(f"+{position_right}+{position_down}")
+window.update()
+offset_x = int(window.winfo_screenwidth()/2 - window.winfo_width()/2)
+offset_y = int(window.winfo_screenheight()/2 - window.winfo_height()/2)
+window.geometry(f"+{offset_x}+{offset_y}")
 
 tk.mainloop()
